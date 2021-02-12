@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-source ~/.bashrc
-export PYTHONUNBUFFERED=1
-echo Running on $HOSTNAME
-source activate eaitorch1
 
 rule_time_steps=1
 num_rules=$1
@@ -10,7 +6,7 @@ rule_emb_dim=$2
 hidden_dim=$3
 application_option=3.0.-1
 seed=$4
-generalize=$5
+generalize=False
 dir_name=$num_rules-$rule_emb_dim-$hidden_dim-$seed-$generalize
 
 
