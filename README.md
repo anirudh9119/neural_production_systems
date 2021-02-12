@@ -38,7 +38,7 @@ embed_dim: Dimension to which the numbers are encoded to.
 
 To reproduce the experiments in the paper:
 ```
-sh runner.sh 3 64 100 1
+sh runner.sh 3 32 64 3
 ```
 
 Expected output:
@@ -58,3 +58,30 @@ Depending on the seed as well as the environment in which the code is run, the b
 (2) best_eval_mse:tensor(0.0004, device='cuda:0')
 (3) best_eval_mse:tensor(0.0006, device='cuda:0')
 ```
+
+
+
+To evalaute the model on multiple sequence lengths:
+```
+sh eval_runner.sh num_rules rule_emb_dim embed_dim seed
+```
+This will run the saved model corresponding to the args provided.
+
+To train and evaluate the model presented in the paper run:
+```
+sh runner.sh 3 32 64 3
+sh eval_runner.sh 3 32 64 3
+```
+
+The output of eval_runner.sh should be as follows:
+```
+FINAL RESULTS ACROSS VARIOUS SEQUENCE LENGTHS
+	SEQUENCE LENGTH	|	MSE
+	      10        |	0.0003
+	      20        |	0.0005
+	      30        |	0.0008
+	      40        |	0.0014
+	      50        |	0.0018
+```
+
+
