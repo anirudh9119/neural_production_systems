@@ -4,26 +4,6 @@
 Our code was tested with python 3.6
 Use `pip install -r requirements.txt` to install all dependencies.
 
-## MNIST Transformation Task
-
-Run the following command from the `MNIST` folder.
-
-```
-sh run.sh seed
-```
-Expected output:
-After a few epochs a complete segregation of rules should be observed in the following manner:
-```
-rotate_left : {0: 0, 1: 0, 2: 0, 3: 4981}
-translate_up : {0: 0, 1: 4950, 2: 0, 3: 0}
-rotate_right : {0: 0, 1: 0, 2: 5030, 3: 0}
-translate_down : {0: 5039, 1: 0, 2: 0, 3: 0}
-
-```
-
-The above snippet indicates that rule number 3 is solely being used for the rotate left transformation, rule number 1 is being used for translate up, rule number 2 is being used for rotate right, and rule number 0 is being used for translate down. Hence a complete segregation is observed.
-
-
 
 ### Arithmetic Task
 Run the following command from the `synthetic` folder.
@@ -59,8 +39,6 @@ Depending on the seed as well as the environment in which the code is run, the b
 (3) best_eval_mse:tensor(0.0006, device='cuda:0')
 ```
 
-
-
 To evalaute the model on multiple sequence lengths:
 ```
 sh eval_runner.sh num_rules rule_emb_dim embed_dim seed
@@ -84,4 +62,22 @@ FINAL RESULTS ACROSS VARIOUS SEQUENCE LENGTHS
 	      50        |	0.0018
 ```
 
+## MNIST Transformation Task
+
+Run the following command from the `MNIST` folder.
+
+```
+sh run.sh seed
+```
+Expected output:
+After a few epochs a complete segregation of rules should be observed in the following manner:
+```
+rotate_left : {0: 0, 1: 0, 2: 0, 3: 4981}
+translate_up : {0: 0, 1: 4950, 2: 0, 3: 0}
+rotate_right : {0: 0, 1: 0, 2: 5030, 3: 0}
+translate_down : {0: 5039, 1: 0, 2: 0, 3: 0}
+
+```
+
+The above snippet indicates that rule number 3 is solely being used for the rotate left transformation, rule number 1 is being used for translate up, rule number 2 is being used for rotate right, and rule number 0 is being used for translate down. Hence a complete segregation is observed.
 
