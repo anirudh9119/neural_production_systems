@@ -5,7 +5,7 @@ Our code was tested with python 3.6
 Use `pip install -r requirements.txt` to install all dependencies.
 
 
-### Arithmetic Task
+## Arithmetic Task
 Run the following command from the `synthetic` folder.
 ```
 sh runner.sh num_rules rule_emb_dim embed_dim seed
