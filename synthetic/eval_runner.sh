@@ -29,6 +29,6 @@ python eval.py --use_rules --comm $comm --grad no --transformer yes --applicatio
     --lr $lr --drop 0.5 --nhid $hidden_dim --num_blocks $num_blocks --topk $num_blocks \
     --nlayers $n_layers --cuda --cudnn --emsize 300 --log-interval 50 --perm_inv $perm_inv \
     --epochs $epochs --train_len 50 --test_len 200 --gumble_anneal_rate $anneal_rate \
-    --rule_time_steps $rule_time_steps --num_rules $num_rules --rule_emb_dim $rule_emb_dim --batch_size $batch_size --use_biases $use_biases --timesteps $timesteps | tee -a "$dir_name/train.log"
+    --rule_time_steps $rule_time_steps --num_rules $num_rules --rule_emb_dim $rule_emb_dim --batch_size $batch_size --use_biases $use_biases --timesteps 10 | tee -a "$dir_name/eval.log"
 
 
