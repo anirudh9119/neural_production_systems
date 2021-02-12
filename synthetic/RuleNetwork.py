@@ -107,23 +107,38 @@ class CustomSelectAttention(nn.Module):
     def __init__(self, d_read, d_write, d_k = 16, num_read = 5, num_write = 5, share_query = False, share_key = False):
         super(CustomSelectAttention, self).__init__()
         if not share_key:
-            self.gll_write = GroupLinearLayer(d_write,d_k, num_write)
+            self.gll_write = GroupLinearLayer(d_write,d_k,  num_write)
         else:
             self.gll_write = nn.Linear(d_write, d_k)
 
         if not share_query:
-            self.gll_read = GroupLinearLayer(d_read,d_k, num_read)
+            self.gll_read = GroupLinearLayer(d_read,d_k,  num_read)
         else:
             self.gll_read = nn.Linear(d_read, d_k)
 
         self.temperature = math.sqrt(d_k)
 
     def forward(self, q, k):
+        
+        #zeros = torch.zeros(q.size(0), 1, 1).to(q.device) * -1
+        #ones = torch.ones(q.size(0), 1, 1).to(q.device)
+
+        #position = torch.cat((zeros, ones), dim = 1)
+        #q = torch.cat((q, position), dim = 2)
+        #read_1 = torch.cat((read[:, 0:1, :], zeros), dim = 1)
+        #read_2 = torch.cat((read[:, 1:2, :], ones), dim = 1)
+
         read = self.gll_read(q)
-        read_1 = read[:, 0:1, :]
-        read_2 = read[:, 1:2, :]
+
+        read_1 = read[:, 0:1]
+        read_2 = read[:, 1:2]
 
         write = self.gll_write(k)
+
+        #write_1 = write[:,0:2]
+        #write_2 = write[:, 2:4]
+
+        #print(write_1.size())
 
         scores_1 = torch.bmm(read_1, write.permute(0, 2, 1)) / self.temperature
         scores_2 = torch.bmm(read_2, write.permute(0, 2, 1)) / self.temperature
@@ -151,6 +166,7 @@ class RuleNetwork(nn.Module):
 
 		self.rule_activation = []
 		self.variable_activation = []
+		self.variable_activation_1 = []
 		self.softmax = []
 		self.masks = []
 		import math
@@ -174,7 +190,7 @@ class RuleNetwork(nn.Module):
 
 		self.dropout = nn.Dropout(p = 0.5)
 
-		self.num_select_arithmetic = CustomSelectAttention(rule_dim, hidden_dim, d_k = 16, num_read = 2, num_write = 3)
+		self.num_select_arithmetic = CustomSelectAttention(rule_dim, hidden_dim, d_k = 16, num_read = 2, num_write = 2)
 
 
 		self.transform_rule = nn.Linear(rule_dim, hidden_dim)
@@ -489,10 +505,11 @@ class RuleNetwork(nn.Module):
 			
 
 			#selected_variable = hidden[:,0:2, :].reshape([hidden.shape[0], 1, -1]).repeat(1, mask.size(2), 1)
-			
+			hidden = hidden[:, 0:2]
 			scores_1, scores_2 = self.num_select_arithmetic(selected_rule, hidden)
 
 			self.variable_activation.append(torch.argmax(scores_1, dim = 1).detach().cpu().numpy())
+			self.variable_activation_1.append(torch.argmax(scores_2, dim = 1).detach().cpu().numpy())
 			
 
 			selected_variable_1 = (hidden * scores_1.unsqueeze(-1)).sum(dim = 1)
@@ -891,6 +908,7 @@ class RuleNetwork(nn.Module):
 	def reset_activations(self):
 		self.rule_activation = []
 		self.variable_activation = []
+		self.variable_activation_1 = []
 		self.rule_probabilities = []
 		self.variable_probabilities = []
 

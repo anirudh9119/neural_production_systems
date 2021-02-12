@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from model import ArithmeticModel
 import torch.nn as nn
 from tqdm import tqdm
-from utilities.rule_stats import get_stats
+#from utilities.rule_stats import get_stats
 import random
 import os
 
@@ -157,6 +157,30 @@ elif args.num_rules > 0:
 optimizer = torch.optim.Adam(model.parameters(), lr = args.lr)
 objective = nn.MSELoss()
 
+def get_stats(rule_selections, variable_selections, variable_selections_1, variable_rules, application_option, num_rules = 5, num_blocks = 1):
+    if isinstance(application_option, str):
+        application_option = int(application_option.split('.')[0])
+    for b in range(rule_selections[0].shape[0]):
+        for w in range(len(rule_selections)):
+            #if application_option == 0 or application_option == 3:
+            #    try:
+            #        tup = (rule_selections[w][b][0], variable_selections[w][b][0])
+            #    except:
+            tup = (rule_selections[w][b], variable_selections[w][b], variable_selections_1[w][b])
+            #elif application_option == 1:
+            #    y = rule_selections[w][b]
+
+            #    r1 = y[0] % num_rules
+            #    v1 = y[0] % num_blocks
+            #    r2  = y[1] % num_rules
+            #    v2 = y[1] % num_blocks
+            #    tup = (r1, v1, r2, v2)
+            if tup not in variable_rules:
+                variable_rules[tup] = 1
+            else:
+                variable_rules[tup] += 1
+    return variable_rules
+
 def operation_to_rule_train(operations, rule_selections, vault, inverse_vault):
 	operations = operations.cpu().numpy()
 	#operations = torch.argmax(operations, dim = 2).cpu().numpy()
@@ -243,7 +267,9 @@ def eval_epoch(epoch):
 			if args.num_rules > 0:
 				rule_selections = model.rule_network.rule_activation
 				variable_selections = model.rule_network.variable_activation
-				variable_rule = get_stats(rule_selections, variable_selections, variable_rule, args.application_option, args.num_rules, args.num_blocks)
+				variable_selections_1 = model.rule_network.variable_activation_1
+
+				variable_rule = get_stats(rule_selections, variable_selections, variable_selections_1, variable_rule, args.application_option, args.num_rules, args.num_blocks)
 				vault, inverse_vault = operation_to_rule(operations, rule_selections, vault, inverse_vault)
 			
 			total_sentences += 1
@@ -326,7 +352,8 @@ def train_epoch(epoch):
 		if args.num_rules > 0:
 			rule_selections = model.rule_network.rule_activation
 			variable_selections = model.rule_network.variable_activation
-			variable_rule = get_stats(rule_selections, variable_selections, variable_rule, args.application_option, args.num_rules, args.num_blocks)
+			variable_selections_1 = model.rule_network.variable_activation_1
+			variable_rule = get_stats(rule_selections, variable_selections, variable_selections_1, variable_rule, args.application_option, args.num_rules, args.num_blocks)
 			vault, inverse_vault = operation_to_rule_train(op, rule_selections, vault, inverse_vault)
 			
 
